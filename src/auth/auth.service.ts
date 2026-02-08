@@ -42,4 +42,12 @@ export class AuthService {
   async changePassword(userId: string, newPassword: string): Promise<void> {
     await this.usersService.updatePassword(userId, newPassword);
   }
+
+  async setAdminPassword(email: string, newPassword: string) {
+  const user = await this.usersService.findByEmail(email);
+  if (!user) throw new UnauthorizedException();
+  await this.usersService.updatePassword(user._id.toHexString(), newPassword);
+  return { ok: true };
+}
+
 }

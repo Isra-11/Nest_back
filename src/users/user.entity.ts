@@ -18,6 +18,13 @@ export class User {
 
   @Prop({ type: [String], default: [] })
   permissions: string[];
+
+  //added by myriam 
+  @Prop()
+resetPasswordTokenHash?: string;
+
+@Prop()
+resetPasswordExpires?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -19,7 +19,6 @@ export class User {
   @Prop({ type: [String], default: [] })
   permissions: string[];
 
-  //added by myriam 
   @Prop()
 resetPasswordTokenHash?: string;
 

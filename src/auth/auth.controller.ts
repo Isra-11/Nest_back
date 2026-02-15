@@ -9,7 +9,10 @@ import { UsersService } from '../users/user.service';
 @Controller('auth')
 export class AuthController {
   //constructor(private authService: AuthService) {}
-  constructor(private authService: AuthService, private usersService: UsersService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Post('login')
   login(@Body() dto: LoginDto) {
@@ -30,22 +33,20 @@ export class AuthController {
     return this.authService.createAdmin(dto);
   }
 
- @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Permissions('*')
-@Post('set-admin-password')
-setAdminPassword(@Body() body: { email: string; newPassword: string }) {
-  return this.authService.setAdminPassword(body.email, body.newPassword);
-}
-//added
-@Post('forgot-password')
-forgotPassword(@Body('email') email: string) {
-  return this.usersService.createResetToken(email);
-}
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('*')
+  @Post('set-admin-password')
+  setAdminPassword(@Body() body: { email: string; newPassword: string }) {
+    return this.authService.setAdminPassword(body.email, body.newPassword);
+  }
+  //added
+  @Post('forgot-password')
+  forgotPassword(@Body('email') email: string) {
+    return this.usersService.createResetToken(email);
+  }
 
-@Post('reset-password')
-resetPassword(@Body() body: { token: string; newPassword: string }) {
-  return this.usersService.resetPassword(body.token, body.newPassword);
-}
-
-
+  @Post('reset-password')
+  resetPassword(@Body() body: { token: string; newPassword: string }) {
+    return this.usersService.resetPassword(body.token, body.newPassword);
+  }
 }

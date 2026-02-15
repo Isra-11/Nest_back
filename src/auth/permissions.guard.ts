@@ -18,7 +18,6 @@ export class PermissionsGuard implements CanActivate {
 
     const user = request.user;
 
-    // Super admin = accès total
     if (user.isSuperAdmin) return true;
 
     return required.every((p) => user.permissions?.includes(p));

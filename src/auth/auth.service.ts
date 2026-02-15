@@ -44,10 +44,9 @@ export class AuthService {
   }
 
   async setAdminPassword(email: string, newPassword: string) {
-  const user = await this.usersService.findByEmail(email);
-  if (!user) throw new UnauthorizedException();
-  await this.usersService.updatePassword(user._id.toHexString(), newPassword);
-  return { ok: true };
-}
-
+    const user = await this.usersService.findByEmail(email);
+    if (!user) throw new UnauthorizedException();
+    await this.usersService.updatePassword(user._id.toHexString(), newPassword);
+    return { ok: true };
+  }
 }

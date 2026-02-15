@@ -9,7 +9,6 @@ import { UsersService } from './user.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // SuperAdmin فقط (permissions ['*'])
   @Get('admins')
   @Permissions('*')
   listAdmins() {

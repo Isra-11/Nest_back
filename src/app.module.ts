@@ -32,6 +32,7 @@ export class AppModule implements OnModuleInit {
     const exists = await this.usersService.findByEmail(email);
     if (!exists) {
       await this.usersService.createSuperAdmin(email, 'SuperSecret123');
+      console.log(' Super admin created');
     }
   }
 }

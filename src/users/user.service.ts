@@ -56,9 +56,7 @@ export class UsersService {
       permissions: ['*'],
     });
   }
-  //added by myriam 
   async listAdmins() {
-  // نرجّعو غير admins (super + normal) مع معلومات للواجهة
   return this.userModel
     .find({}, { email: 1, isSuperAdmin: 1, permissions: 1, createdAt: 1 })
     .sort({ createdAt: -1 })
@@ -83,7 +81,6 @@ async updatePermissions(id: string, permissions: string[]) {
 async createResetToken(email: string) {
   const user = await this.findByEmail(email);
 
-  // ما نكشفوش إذا user موجود ولا لا (security)
   if (!user) return { ok: true };
 
   const token = crypto.randomBytes(24).toString('hex');
@@ -93,7 +90,6 @@ async createResetToken(email: string) {
   user.resetPasswordExpires = new Date(Date.now() + 1000 * 60 * 15); // 15 دقيقة
   await user.save();
 
-  // DEV: نرجّع token (في prod تبعثو بالإيميل)
   return { ok: true, resetToken: token };
 }
 

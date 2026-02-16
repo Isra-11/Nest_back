@@ -17,25 +17,22 @@ export class UsersService {
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
+async createAdmin(email: string, permissions: any) {
+  const password = Math.random().toString(36).slice(-8);
+  const hashed = await bcrypt.hash(password, 10);
 
-  async createAdmin(
-    email: string,
-    permissions: string[],
-  ): Promise<{ email: string; password: string }> {
-    const password = Math.random().toString(36).slice(-8);
-    const hashed = await bcrypt.hash(password, 10);
+  const admin = new this.userModel({
+    email,
+    password: hashed,
+    permissions,
+    isSuperAdmin: false,
+  });
 
-    const admin = new this.userModel({
-      email,
-      password: hashed,
-      permissions,
-      isSuperAdmin: false,
-    });
+  await admin.save();
 
-    await admin.save();
+  return { email, password };
+}
 
-    return { email, password };
-  }
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     const hashed = await bcrypt.hash(newPassword, 10);

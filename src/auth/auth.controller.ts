@@ -34,7 +34,6 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('*')
   @Post('set-admin-password')
   setAdminPassword(@Body() body: { email: string; newPassword: string }) {
     return this.authService.setAdminPassword(body.email, body.newPassword);

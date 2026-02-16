@@ -16,8 +16,12 @@ export class User {
   @Prop({ default: false })
   isSuperAdmin: boolean;
 
-  @Prop({ type: [String], default: [] })
-  permissions: string[];
+@Prop({
+  type: Object,
+  default: {},
+})
+permissions: Record<string, any>;
+
 
   @Prop()
 resetPasswordTokenHash?: string;
@@ -25,5 +29,6 @@ resetPasswordTokenHash?: string;
 @Prop()
 resetPasswordExpires?: Date;
 }
+
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
@@ -10,20 +18,20 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('admins')
-  @Permissions('*')
   listAdmins() {
     return this.usersService.listAdmins();
   }
 
   @Delete('admins/:id')
-  @Permissions('*')
   deleteAdmin(@Param('id') id: string) {
     return this.usersService.deleteAdmin(id);
   }
 
   @Patch('admins/:id/permissions')
-  @Permissions('*')
-  updatePerms(@Param('id') id: string, @Body('permissions') permissions: string[]) {
+  updatePerms(
+    @Param('id') id: string,
+    @Body('permissions') permissions: string[],
+  ) {
     return this.usersService.updatePermissions(id, permissions || []);
   }
 }

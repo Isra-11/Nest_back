@@ -30,7 +30,7 @@ export class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       sub: user._id.toHexString(),
       isSuperAdmin: user.isSuperAdmin,
-      permissions: user.permissions,
+      permissions: user.permissions || {},
     };
 
     return {

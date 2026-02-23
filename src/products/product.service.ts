@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Product, ProductDocument } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 
@@ -8,28 +8,40 @@ import { CreateProductDto } from './dto/create-product.dto';
 export class ProductsService {
   constructor(
     @InjectModel(Product.name)
-    private readonly productModel: Model<ProductDocument>,
+    private productModel: Model<ProductDocument>,
   ) {}
 
-  async create(dto: CreateProductDto) {
-    return this.productModel.create(dto);
+  async create(data: CreateProductDto) {
+    return this.productModel.create(data);
   }
 
   async findAll() {
-    return this.productModel.find().sort({ createdAt: -1 }).exec();
+    return this.productModel.find().lean().exec();
   }
 
   async findOne(id: string) {
-    return this.productModel.findById(new Types.ObjectId(id)).exec();
+    const product = await this.productModel.findById(id).lean().exec();
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
   }
 
-  async update(id: string, dto: Partial<CreateProductDto>) {
-    return this.productModel
-      .findByIdAndUpdate(new Types.ObjectId(id), dto, { new: true })
-      .exec();
+  async update(id: string, body: Partial<CreateProductDto>, images?: string[]) {
+    if (images?.length) {
+      body.images = images;
+    }
+
+    const updated = await this.productModel.findByIdAndUpdate(id, body, {
+      new: true,
+    });
+
+    if (!updated) throw new NotFoundException('Product not found');
+
+    return updated;
   }
 
-  async delete(id: string) {
-    return this.productModel.findByIdAndDelete(new Types.ObjectId(id)).exec();
+  async remove(id: string) {
+    const deleted = await this.productModel.findByIdAndDelete(id);
+    if (!deleted) throw new NotFoundException('Product not found');
+    return { message: 'Product deleted' };
   }
 }

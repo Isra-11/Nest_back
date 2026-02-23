@@ -3,29 +3,51 @@ import { Document } from 'mongoose';
 
 export type ProductDocument = Product & Document;
 
+export enum ProductStatus {
+  PUBLISHED = 'affiche',
+  HIDDEN = 'cache',
+  OUT_OF_STOCK = 'rupture',
+  LINK_ONLY = 'lien',
+}
+
 @Schema({ timestamps: true })
 export class Product {
-
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  image: string;
+  @Prop()
+  slug: string;
 
-  @Prop({ required: true })
+  @Prop()
+  sku: string;
+
+  @Prop({ default: 0 })
   price: number;
 
   @Prop({ default: 0 })
-  deliveryPrice: number;
+  oldPrice: number;
+
+  @Prop({ default: 0 })
+  cost: number;
+
+  @Prop({ type: [String], default: [] })
+  images: string[];
 
   @Prop({ default: 0 })
   stock: number;
 
-  @Prop({ default: 'ACTIVE' }) 
-  status: string;
+  @Prop({
+    type: String,
+    enum: Object.values(ProductStatus),
+    default: ProductStatus.PUBLISHED,
+  })
+  status: ProductStatus;
 
   @Prop({ type: [String], default: [] })
-  adsLinks: string[];
+  categories: string[];
+
+  @Prop()
+  description: string; // HTML content
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

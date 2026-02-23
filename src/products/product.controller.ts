@@ -1,51 +1,61 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
-  Body,
   Controller,
-  Delete,
+  Post,
+  Body,
   Get,
   Param,
   Patch,
-  Post,
-  UseGuards,
+  Delete,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { Permissions } from '../auth/permissions.decorator';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private productsService: ProductsService) {}
 
+  // CREATE
   @Post()
-  @Permissions('products', 'create')
-  create(@Body() dto: CreateProductDto) {
-    return this.productsService.create(dto);
+  @UseInterceptors(FilesInterceptor('images', 10))
+  create(
+    @Body() body: CreateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const imagePaths = files?.map((file) => `/uploads/${file.filename}`) || [];
+    return this.productsService.create({ ...body, images: imagePaths });
   }
 
+  // GET ALL
   @Get()
-  @Permissions('products', 'read')
   findAll() {
     return this.productsService.findAll();
   }
 
+  // GET ONE
   @Get(':id')
-  @Permissions('products', 'read')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
+  // UPDATE
   @Patch(':id')
-  @Permissions('products', 'update')
-  update(@Param('id') id: string, @Body() dto: Partial<CreateProductDto>) {
-    return this.productsService.update(id, dto);
+  @UseInterceptors(FilesInterceptor('images', 10))
+  update(
+    @Param('id') id: string,
+    @Body() body: Partial<CreateProductDto>,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const imagePaths = files?.map((file) => `/uploads/${file.filename}`);
+    return this.productsService.update(id, body, imagePaths);
   }
 
+  // DELETE
   @Delete(':id')
-  @Permissions('products', 'delete')
-  delete(@Param('id') id: string) {
-    return this.productsService.delete(id);
+  remove(@Param('id') id: string) {
+    return this.productsService.remove(id);
   }
 }

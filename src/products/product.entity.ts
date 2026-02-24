@@ -43,9 +43,8 @@ export class Product {
   })
   status: ProductStatus;
 
-  @Prop({ type: [String], default: [] })
+  @Prop({ type: [{ type: String, ref: 'Category' }] })
   categories: string[];
-
   @Prop()
   description: string; // HTML content
 }

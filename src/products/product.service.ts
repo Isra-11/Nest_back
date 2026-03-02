@@ -25,19 +25,13 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, body: Partial<CreateProductDto>, images?: string[]) {
-    if (images?.length) {
-      body.images = images;
-    }
+async update(id: string, body: Partial<Product>, images?: string[]) {
+  if (images?.length) body.images = images;
 
-    const updated = await this.productModel.findByIdAndUpdate(id, body, {
-      new: true,
-    });
-
-    if (!updated) throw new NotFoundException('Product not found');
-
-    return updated;
-  }
+  const updated = await this.productModel.findByIdAndUpdate(id, body, { new: true });
+  if (!updated) throw new NotFoundException('Product not found');
+  return updated;
+}
 
   async remove(id: string) {
     const deleted = await this.productModel.findByIdAndDelete(id);

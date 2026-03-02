@@ -10,7 +10,7 @@ import { DeliveryModule } from './delivery/delivery.module';
 import { UsersService } from './users/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PermissionsModule } from './permissions/permissions.module';
-
+import { CategoryModule } from './categories/category.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/ecommerce_db'),
@@ -22,6 +22,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     DashboardModule,
     DeliveryModule,
     PermissionsModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

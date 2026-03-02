@@ -9,6 +9,7 @@ import {
   Delete,
   UploadedFiles,
   UseInterceptors,
+   BadRequestException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './product.service';
@@ -19,15 +20,20 @@ export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
   // CREATE
-  @Post()
-  @UseInterceptors(FilesInterceptor('images', 10))
-  create(
-    @Body() body: CreateProductDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
-    const imagePaths = files?.map((file) => `/uploads/${file.filename}`) || [];
-    return this.productsService.create({ ...body, images: imagePaths });
+@Post()
+@UseInterceptors(FilesInterceptor('images', 10))
+create(
+  @Body() body: CreateProductDto,
+  @UploadedFiles() files: Express.Multer.File[],
+) {
+  if (!files?.length) {
+    throw new BadRequestException('Images are required');
   }
+
+  const imagePaths = files.map((file) => `/uploads/${file.filename}`);
+  return this.productsService.create({ ...(body as any), images: imagePaths });
+}
+
 
   // GET ALL
   @Get()

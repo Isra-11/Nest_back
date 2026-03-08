@@ -47,12 +47,30 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
 app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
-  // ✅ CORS pour mobile + web
-  // app.enableCors();
-   app.enableCors({
-    origin: ['http://localhost:8081', 'http://127.0.0.1:8081'],
-    credentials: true,
-  });
+
+  //  app.enableCors({
+  //   origin: ['http://localhost:8081', 'http://127.0.0.1:8081', 'http://localhost:5173'],
+  //   credentials: true,
+  // });
+  app.enableCors({
+  origin: (origin, callback) => {
+    const allowed = [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://localhost:8081",
+      "http://127.0.0.1:8081",
+    ];
+
+    // allow Postman / curl (no origin)
+    if (!origin) return callback(null, true);
+
+    if (allowed.includes(origin)) return callback(null, true);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+});
    app.useGlobalPipes(
   new ValidationPipe({
     whitelist: true,

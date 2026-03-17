@@ -17,6 +17,10 @@ class OrderItemDto {
 
   @IsNumber()
   price: number;
+
+  @IsOptional()
+  @IsNumber()
+  deleveryFree?: number;
 }
 
 export class CreateOrderDto {

@@ -14,11 +14,26 @@ export class OrdersService {
 
   async create(data: CreateOrderDto) {
     const total = data.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) =>
+        sum + item.price * item.quantity + (item.deleveryFree || 0),
       0,
     );
 
-    return this.orderModel.create({ ...data, total });
+    const order = await this.orderModel.create({
+      ...data,
+      status: 'en_attente',
+      total,
+      history: [
+        {
+          status: 'en_attente',
+          changedBy: data.email || data.customerName,
+          note: 'Commande créée',
+          date: new Date(),
+        },
+      ],
+    });
+
+    return order;
   }
 
   findAll() {
@@ -37,21 +52,35 @@ export class OrdersService {
     return order;
   }
 
-  async update(id: string, data: UpdateOrderDto) {
+  async update(id: string, data: UpdateOrderDto, adminEmail: string) {
+    const order = await this.orderModel.findById(id);
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (data.status && data.status !== order.status) {
+      order.history.push({
+        status: data.status,
+        changedBy: adminEmail,
+        note: 'Statut modifié',
+        date: new Date(),
+      });
+
+      order.status = data.status;
+    }
+
     if (data.items) {
-      data['total'] = data.items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
+      order.total = data.items.reduce(
+        (sum, item) =>
+          sum + item.price * item.quantity + (item.deleveryFree || 0),
         0,
       );
     }
 
-    const updated = await this.orderModel.findByIdAndUpdate(id, data, {
-      new: true,
-    });
+    Object.assign(order, data);
 
-    if (!updated) throw new NotFoundException('Order not found');
-
-    return updated;
+    return order.save();
   }
 
   async remove(id: string) {

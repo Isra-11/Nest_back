@@ -22,19 +22,44 @@ export enum RejectReason {
   OTHER = 'other',
 }
 
-@Schema({ timestamps: true })
+/* ---------------- ORDER ITEM ---------------- */
+
+@Schema()
 export class OrderItem {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
   product: Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop()
   quantity: number;
 
-  @Prop({ required: true })
+  @Prop()
   price: number;
+  @Prop()
+  deleveryFree: number;
 }
 
 const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
+
+/* ---------------- ORDER HISTORY ---------------- */
+
+@Schema()
+export class OrderHistory {
+  @Prop()
+  status: OrderStatus;
+
+  @Prop()
+  changedBy: string; // email admin ou client
+
+  @Prop()
+  note: string;
+
+  @Prop({ default: Date.now })
+  date: Date;
+}
+
+const OrderHistorySchema = SchemaFactory.createForClass(OrderHistory);
+
+/* ---------------- ORDER ---------------- */
 
 @Schema({ timestamps: true })
 export class Order {
@@ -60,11 +85,12 @@ export class Order {
   @Prop({ default: false })
   exchange: boolean;
 
-  // Client details
-  @Prop({ required: true })
+  /* CLIENT */
+
+  @Prop()
   customerName: string;
 
-  @Prop({ required: true })
+  @Prop()
   phone: string;
 
   @Prop()
@@ -79,11 +105,18 @@ export class Order {
   @Prop()
   customerNote: string;
 
+  /* PRODUCTS */
+
   @Prop({ type: [OrderItemSchema], default: [] })
   items: OrderItem[];
 
   @Prop({ default: 0 })
   total: number;
+
+  /* HISTORY */
+
+  @Prop({ type: [OrderHistorySchema], default: [] })
+  history: OrderHistory[];
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
